@@ -13,7 +13,7 @@ def generate_random_label():
     """Randomly assign 0 (benign) or 1 (suspicious)."""
     return random.randint(0, 1)
 
-def generate_dataset(num_samples=9000, output_file='random_packet_dataset.csv'):
+def generate_dataset(num_samples=900000, output_file='dataset.csv'):
     with open(output_file, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['payload_length', 'entropy_score', 'label'])
