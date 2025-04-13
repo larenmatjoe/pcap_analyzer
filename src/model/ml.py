@@ -34,11 +34,10 @@ print("accuracy = ",loss_metrics[1])
 
 keras.saving.save_model(model, 'model.keras')
 model2 = load_model("model.keras")
-
 """
 #predict = model.predict(x_test)
 
 model2 = load_model("model/model.keras")
-
+#"""
 
 

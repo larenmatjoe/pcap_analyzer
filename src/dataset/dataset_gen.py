@@ -1,32 +1,57 @@
-import csv
-import random
+import numpy as np
+import pandas as pd
 
-def generate_random_entropy():
-    """Generate a random entropy score between 0 and 8 (Shannon entropy range)."""
-    return round(random.uniform(0, 8), 4)
+# Set seed for reproducibility
+np.random.seed(42)
 
-def generate_random_payload_length():
-    """Generate a realistic payload length (e.g., between 20 and 1500 bytes)."""
-    return random.randint(20, 1500)
+# Configuration
+num_samples = 90000  # Total number of samples (balanced classes)
+num_benign = num_samples // 2
+num_malicious = num_samples // 2
 
-def generate_random_label():
-    """Randomly assign 0 (benign) or 1 (suspicious)."""
-    return random.randint(0, 1)
+def generate_benign_samples(num_samples):
+    data = []
+    for _ in range(num_samples):
+        # 5% of benign samples have high entropy (e.g., encrypted traffic)
+        if np.random.rand() < 0.05:
+            length = int(np.clip(np.random.normal(1000, 300), 50, None))
+            entropy = np.clip(np.random.normal(7.5, 0.5), 0, 8)
+        else:
+            # Regular benign samples with length-dependent entropy
+            length = int(np.clip(np.random.normal(1000, 300), 50, None))
+            base_entropy = 5.0 - 0.002 * (length - 1000)
+            entropy = np.clip(base_entropy + np.random.normal(0, 0.5), 0, 8)
+        data.append([length, entropy, 0])
+    return data
 
-def generate_dataset(num_samples=900000, output_file='dataset.csv'):
-    with open(output_file, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['payload_length', 'entropy_score', 'label'])
+def generate_malicious_samples(num_samples):
+    data = []
+    for _ in range(num_samples):
+        # 10% of malicious samples mimic benign characteristics
+        if np.random.rand() < 0.1:
+            length = int(np.clip(np.random.normal(1000, 300), 50, None))
+            base_entropy = 5.0 - 0.002 * (length - 1000)
+            entropy = np.clip(base_entropy + np.random.normal(0, 0.5), 0, 8)
+        else:
+            # Regular malicious samples with high entropy
+            length = np.random.randint(50, 2501)  # 50-2500 inclusive
+            entropy = np.clip(np.random.normal(7.5, 1.0), 0, 8)
+        data.append([length, entropy, 1])
+    return data
 
-        for _ in range(num_samples):
-            length = generate_random_payload_length()
-            entropy = generate_random_entropy()
-            label = generate_random_label()
-            writer.writerow([length, entropy, label])
+# Generate data
+benign_data = generate_benign_samples(num_benign)
+malicious_data = generate_malicious_samples(num_malicious)
 
-    print(f"Dataset with {num_samples} rows saved to {output_file}")
+# Create DataFrames and combine
+df = pd.DataFrame(
+    benign_data + malicious_data,
+    columns=['payload_length', 'entropy_score', 'label']
+)
 
-# === Run it ===
-if __name__ == '__main__':
-    generate_dataset()
+# Shuffle the dataset
+df = df.sample(frac=1, random_state=42).reset_index(drop=True)
 
+# Save to CSV
+df.to_csv('dataset.csv', index=False)
+print("Dataset generated successfully!")
