@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore")
 import numpy as np
 import sklearn
 import pandas as pd
@@ -8,7 +10,6 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.models import load_model
 from sklearn.model_selection import train_test_split
-
 """
 data = pd.read_csv("../dataset/dataset.csv")
 y = data['label']
@@ -34,10 +35,13 @@ print("accuracy = ",loss_metrics[1])
 
 keras.saving.save_model(model, 'model.keras')
 model2 = load_model("model.keras")
+predict = model.predict(x_test)
+print(predict)
 """
-#predict = model.predict(x_test)
-
+#data = np.array([45, 0.23412]).reshape(1,2)
 model2 = load_model("model/model.keras")
+#model2 = load_model("model.keras")
+#print(model2.predict(data))
 #"""
 
 

@@ -14,5 +14,5 @@ if __name__ == "__main__":
         if size != 0:
             data = np.array([size, score]).reshape(1,2)
             prediction = ML.model2.predict(data)
-            print(prediction)
+            print(prediction,int(prediction*10))
 

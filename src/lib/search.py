@@ -6,9 +6,9 @@ class SearchPayload:
         self.rule_path = rule_path
         self.packets = packets
         self.rules = yara.compile(filepath=self.rule_path)
-        self.matches = set()
+        self.matches = []
 
-    def search(self) -> set:
+    def search(self):
         for packet in self.packets:
             try:
                 # Make sure packet has a payload with load attribute
@@ -27,12 +27,14 @@ class SearchPayload:
                     rule_names = [match.rule for match in flag]
                     if packet.haslayer(IP):  # Changed from 'IP' string to IP object
                         ip = packet[IP].src
-                        self.matches.add((ip, ', '.join(rule_names)))
+                        if [ip,rule_names] not in self.matches:
+                            self.matches.append([ip,rule_names])
                     else:
-                        self.matches.add(('unknown', ', '.join(rule_names)))
+                        if [ip,rule_names] not in self.matches:
+                            self.matches.add(('unknown', ', '.join(rule_names)))
             except Exception as e:
                 # Skip packets that cause errors during processing
                 continue
-
+        
         return self.matches
 

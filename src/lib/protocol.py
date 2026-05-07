@@ -1,3 +1,6 @@
+from scapy.layers.inet import TCP as TCP
+from scapy.layers.inet import UDP as UDP
+
 class ProtocolAnalyze:
     def __init__(self, packets):
         self.packets = packets
@@ -5,13 +8,18 @@ class ProtocolAnalyze:
 
     def analyze(self):
         for packet in self.packets:
-            # Check for layer names in the packet
-            for layer in packet.layers():
-                proto_name = layer.__name__
-                if proto_name in self.protocol_stats:
-                    self.protocol_stats[proto_name] += 1
+            if packet.haslayer(TCP):
+                if "TCP" in self.protocol_stats:
+                    self.protocol_stats["TCP"] += 1
                 else:
-                    self.protocol_stats[proto_name] = 1
+                    self.protocol_stats["TCP"] = 1
+            elif packet.haslayer(UDP):
+                if "UDP" in self.protocol_stats:
+                    self.protocol_stats["UDP"] += 1
+                else:
+                    self.protocol_stats["UDP"] = 1
+            else:
+                pass
 
         return self.protocol_stats
 
