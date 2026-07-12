@@ -25,7 +25,7 @@ npm run dev
 
 ## How It Works
 
-1. **File Upload**: Users can upload PCAP files through drag-and-drop or file selection.
+1. **File Upload**: Users can upload PCAP files through drag-and-drop or file selection
 2. **Analysis**: The uploaded file is sent to the server, where a Python script (simulated in this implementation) processes it using your existing code.
 3. **Visualization**: The results are displayed in an interactive dashboard with:
 
